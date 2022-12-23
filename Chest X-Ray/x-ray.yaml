@@ -1,0 +1,15 @@
+functions:
+  oscar:
+  - oscar-remote:
+      name: x-ray
+      memory: 2Gi
+      cpu: '2.0'
+      image: ghcr.io/sergiolangaritabenitez/chest_x_ray
+      script: script.sh
+      log_level: CRITICAL
+      input:
+      - storage_provider: minio
+        path: chestray/input
+      output:
+      - storage_provider: minio
+        path: chestray/output

@@ -1,0 +1,15 @@
+functions:
+  oscar:
+  - oscar-remote:
+      name: alzheimer
+      memory: 2Gi
+      cpu: '2.0'
+      image: ghcr.io/sergiolangaritabenitez/alzheimer
+      script: script.sh
+      log_level: CRITICAL
+      input:
+      - storage_provider: minio
+        path: alzheimer/input
+      output:
+      - storage_provider: minio
+        path: alzheimer/output

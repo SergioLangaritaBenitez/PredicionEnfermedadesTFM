@@ -1,0 +1,15 @@
+functions:
+  oscar:
+  - oscar-remote:
+      name: breast-cancer-prediction
+      memory: 3Gi
+      cpu: '2.0'
+      image: ghcr.io/sergiolangaritabenitez/breastcancerprediction
+      script: script.sh
+      log_level: CRITICAL
+      input:
+      - storage_provider: minio
+        path: bcp/input
+      output:
+      - storage_provider: minio
+        path: bcp/output/model
