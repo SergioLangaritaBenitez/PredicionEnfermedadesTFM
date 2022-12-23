@@ -1,0 +1,15 @@
+functions:
+  oscar:
+  - oscar-cluster:
+      name: breast-cancer-prediction-graphic
+      memory: 4Gi
+      cpu: '4.0'
+      image: ghcr.io/sergiolangaritabenitez/bcpgraph
+      script: script.sh
+      log_level: CRITICAL
+      input:
+      - storage_provider: minio
+        path: bcp/input
+      output:
+      - storage_provider: minio
+        path: bcp/output/grap
