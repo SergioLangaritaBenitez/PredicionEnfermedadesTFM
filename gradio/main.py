@@ -3,13 +3,18 @@ import base64
 import os
 import zipfile
 from gradio_oscar import gradiooscar
+from oscar_python.client import Client
 
 
 baseurl=os.environ['oscar_endpoint']
-ssl= True   
+ssl= False   
+pre ="/opt/"
+port=int(os.environ['port'])
 
 def authorization(login, password):
     global gro 
+    global client
+    client = Client("cluster-id",baseurl, login, password, False)
     gro = gradiooscar(baseurl,login,password,ssl)
     return gro.getLogin()
 
@@ -25,29 +30,16 @@ def parseResult(result):
 
 
 def radiografiaAsync(image):
-    gro.callAsync(image,"chestray/input","chestray/output","a.txt")
-    f=open("a.txt", "r") 
-    result=f.read()
-    os.remove("a.txt")
-    return parseResult(result)
+    response=gro.callAsync(image,"chestray","input","output")
+    return parseResult(response)
 
 
-def radiografiaSync(image):
-    #result=gro.callSync("breast-cancer-prediction-graphic",input2,"resultados4.zip")
-    result=gro.callSync("x-ray",image)
-    return parseResult(result.decode())
+
 
 def rmiAsync(image):
-    gro.callAsync(image,"alzheimer/input","alzheimer/output","a.txt")
-    f=open("a.txt", "r") 
-    result=f.read()
-    os.remove("a.txt")
-    return parseResult(result)
+    response=gro.callAsync(image,"alzheimer","input","output")
 
-def rmiSync(image):
-    result=gro.callSync("alzheimer",image)
-    print(result)
-    return parseResult(result.decode())
+    return parseResult(response)
 
 
 def bcdAsync(mean_radius,mean_texture,mean_smoothness):
@@ -55,22 +47,8 @@ def bcdAsync(mean_radius,mean_texture,mean_smoothness):
     f = open("myfile.txt", "w") 
     f.write(data)
     f.close()
-    gro.minio_putfile("bcp","input","myfile.txt")
+    result=gro.call2Async("myfile.txt","bcp","input",["output/grap","output/model"],[".zip",".txt"])
     os.remove("myfile.txt")
-    paths=gro.minio_waitAndDownloadSome("bcp","output",2,"./")
-    if(".zip" in paths[0]):
-        zipp=paths[0]
-        text=paths[1]
-    else:
-        text=paths[0]
-        zipp=paths[1]
-    with zipfile.ZipFile(zipp, 'r') as zip_ref:
-            zip_ref.extractall(".")
-    f = open(text, "r") 
-    result=f.read()
-    f.close()
-    os.remove(zipp)
-    os.remove(text)
     return result,"picture1.png","picture2.png","picture3.png"
 
 
@@ -83,7 +61,7 @@ with gr.Blocks() as demo:
             img1 = gr.Image(type="filepath")
             inbtw1 = gr.Button("Process X-Ray image" )
             #inbtw2 = gr.Button("Process X-Ray image Sync")
-        examples=gr.Examples(["/opt/NORMAL.jpeg","/opt/COVID19.jpeg","/opt/Pneumonia.jpeg","/opt/Tuberculosis.png"], img1) 
+        examples=gr.Examples([pre+"NORMAL.jpeg",pre+"COVID19.jpeg",pre+"Pneumonia.jpeg",pre+"Tuberculosis.png"], img1) 
         label1=gr.Label(num_top_classes=4)
         textbox1=gr.Textbox(label="Prediction")
         inbtw1.click(fn=radiografiaAsync,
@@ -97,7 +75,7 @@ with gr.Blocks() as demo:
             img2 = gr.Image(type="filepath",)
             inbtalz1 = gr.Button("Detection of Alzheimer")
             #inbtalz2 = gr.Button("Detection of Alzheimer Sync")
-        examples2=gr.Examples(["/opt/mild_2.jpg","/opt/moderate_19.jpg","/opt/non_73.jpg","/opt/verymild_216.jpg"], img2)
+        examples2=gr.Examples([pre+"mild_2.jpg",pre+"moderate_19.jpg",pre+"non_73.jpg",pre+"verymild_216.jpg"], img2)
         label2=gr.Label(num_top_classes=4)
         textbox2=gr.Textbox(label="Prediction")
         inbtalz1.click(fn=rmiAsync,
@@ -123,4 +101,4 @@ with gr.Blocks() as demo:
         inbtw3.click(fn=bcdAsync,
                 inputs= [mean_radius,mean_texture,mean_smoothness],
                 outputs=[textbox3,img1,img2,img3])            
-demo.launch(server_name="0.0.0.0",server_port=int(os.environ['port']),auth=authorization)
+demo.launch(server_name="0.0.0.0",server_port=port,auth=authorization)

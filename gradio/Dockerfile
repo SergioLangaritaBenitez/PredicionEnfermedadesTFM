@@ -1,5 +1,5 @@
 FROM python:3.8
-RUN pip install gradio minio
+RUN pip install gradio minio oscar-python
 COPY gradio_oscar.py /opt/gradio_oscar.py
 COPY main.py /opt/main.py
 COPY mild_2.jpg /opt/mild_2.jpg
