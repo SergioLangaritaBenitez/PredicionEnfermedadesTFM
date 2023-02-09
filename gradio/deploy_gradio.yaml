@@ -19,7 +19,7 @@ spec:
           image: ghcr.io/sergiolangaritabenitez/gradio_tfm
           env:
             - name: oscar_endpoint
-              value: "https://peaceful-haslett1.im.grycap.net"
+              value: "https://eager-torvalds3.im.grycap.net"
             - name: port
               value: "30001"
           ports:
@@ -52,10 +52,10 @@ metadata:
 spec:
   tls:
   - hosts:
-    - gradio.peaceful-haslett1.im.grycap.net
-    secretName: gradio.peaceful-haslett1.im.grycap.net
+    - medical.eager-torvalds3.im.grycap.net
+    secretName: medical.eager-torvalds3.im.grycap.net
   rules:
-  - host: gradio.peaceful-haslett1.im.grycap.net
+  - host: medical.eager-torvalds3.im.grycap.net
     http:
       paths:
       - path: /
