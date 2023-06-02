@@ -1,6 +1,6 @@
 functions:
   oscar:
-  - oscar-remote:
+  - oscar-cluster:
       name: alzheimer
       memory: 2Gi
       cpu: '2.0'
